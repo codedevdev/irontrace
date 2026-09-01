@@ -1,5 +1,11 @@
 # IronTrace — Translations / Переклади / Übersetzungen
 
+<p align="center">
+  <a href="https://github.com/codedevdev/irontrace/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/codedevdev/irontrace/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/codedevdev/irontrace/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/codedevdev/irontrace?label=release"></a>
+  <a href="https://github.com/codedevdev/irontrace/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/codedevdev/irontrace/total?label=downloads"></a>
+</p>
+
 Localized README files for IronTrace. English is the canonical version: [../../README.md](../../README.md).
 
 | Language | File | Status |

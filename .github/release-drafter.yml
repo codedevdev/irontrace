@@ -1,0 +1,23 @@
+name-template: 'IronTrace v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+version-resolver:
+  default: patch
+categories:
+  - title: Features
+    labels:
+      - feature
+      - enhancement
+  - title: Bug Fixes
+    labels:
+      - bug
+      - fix
+  - title: Security
+    labels:
+      - security
+  - title: Documentation
+    labels:
+      - documentation
+  - title: Maintenance
+    labels:
+      - chore
+      - dependencies

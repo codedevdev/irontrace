@@ -1,6 +1,16 @@
 # IronTrace
 
 <p align="center">
+  <a href="https://github.com/codedevdev/irontrace/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/codedevdev/irontrace/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/codedevdev/irontrace/actions/workflows/release.yml"><img alt="Release" src="https://github.com/codedevdev/irontrace/actions/workflows/release.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/codedevdev/irontrace/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/codedevdev/irontrace?label=release"></a>
+  <a href="https://github.com/codedevdev/irontrace/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/codedevdev/irontrace/total?label=downloads"></a>
+  <a href="https://dotnet.microsoft.com/"><img alt=".NET 10" src="https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet"></a>
+  <a href="https://github.com/codedevdev/irontrace"><img alt="Platform" src="https://img.shields.io/badge/platform-Windows%20x64-0078D4?logo=windows"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/codedevdev/irontrace"></a>
+</p>
+
+<p align="center">
   <strong>🌐 Languages</strong><br/>
   <a href="README.md"><b>English</b></a> ·
   <a href="docs/i18n/README.uk.md">Українська</a> ·
@@ -30,6 +40,7 @@ IronTrace collects evidence about platform security, PCI/PCIe/USB devices, drive
 ## Table of contents
 
 - [Quick start](#quick-start)
+- [Downloads](#downloads)
 - [Scan modes](#scan-modes)
 - [Desktop app (WPF)](#desktop-app-wpf)
 - [CLI](#cli)
@@ -68,6 +79,22 @@ dotnet run --project src/IronTrace.App -c Release
 ```
 
 Scans work **offline** when bundled reference DBs under `data/reference/` are present. Elevation is optional (`asInvoker`); run as Administrator only if you want deeper Code Integrity / DeviceGuard detail.
+
+---
+
+## Downloads
+
+**Stable release:** [Latest GitHub Release](https://github.com/codedevdev/irontrace/releases/latest) — download `IronTrace-{version}-win-x64.zip`.
+
+| File | Description |
+|------|-------------|
+| `IronTrace.exe` | WPF desktop app (self-contained, no .NET runtime required) |
+| `irontrace.exe` | CLI headless scanner |
+| `reference/` | Offline pci/usb/loldrivers DBs bundled with the build |
+
+**Nightly build:** every push to `main` produces a 7-day artifact in [Actions → Release workflow](https://github.com/codedevdev/irontrace/actions/workflows/release.yml).
+
+**Not included:** [hollows_hunter](https://github.com/hasherezade/hollows_hunter) / pe-sieve (third-party BSD-2-Clause; install separately for memory scan). See [Optional memory scan](#optional-memory-scan-hollows_hunter).
 
 ---
 

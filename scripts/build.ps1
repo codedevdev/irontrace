@@ -7,9 +7,9 @@ $ErrorActionPreference = 'Stop'
 $dotnet = if (Test-Path 'C:\Program Files\dotnet\dotnet.exe') { 'C:\Program Files\dotnet\dotnet.exe' } else { 'dotnet' }
 Set-Location $PSScriptRoot\..
 
-& $dotnet restore IronTrace.slnx
-& $dotnet build IronTrace.slnx -c Release --no-restore
-& $dotnet test IronTrace.slnx -c Release --no-build
+& $dotnet restore IronTrace.sln
+& $dotnet build IronTrace.sln -c Release --no-restore
+& $dotnet test IronTrace.sln -c Release --no-build
 
 if ($Publish) {
     New-Item -ItemType Directory -Force -Path artifacts\publish\win-x64 | Out-Null

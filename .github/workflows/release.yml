@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish win-x64
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          global-json-file: global.json
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $isTag = '${{ github.ref }}' -like 'refs/tags/v*'
+          if ($isTag) {
+            $ver = '${{ github.ref_name }}' -replace '^v', ''
+          } else {
+            $line = Select-String -Path 'src/IronTrace.Contracts/Versioning/IronTraceVersions.cs' -Pattern 'Application = "([^"]+)"'
+            $ver = $line.Matches[0].Groups[1].Value
+          }
+          "version=$ver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "is_tag=$($isTag.ToString().ToLower())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "Version: $ver (tag release: $isTag)"
+
+      - name: Publish WPF (IronTrace.exe)
+        run: >
+          dotnet publish src/IronTrace.App/IronTrace.App.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o artifacts/publish/win-x64
+
+      - name: Publish CLI (irontrace.exe)
+        run: >
+          dotnet publish src/IronTrace.Cli/IronTrace.Cli.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o artifacts/publish/cli
+
+      - name: Package zip
+        id: package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = '${{ steps.version.outputs.version }}'
+          $zipName = "IronTrace-$version-win-x64.zip"
+          $staging = "artifacts/staging/IronTrace-$version-win-x64"
+          New-Item -ItemType Directory -Force -Path $staging | Out-Null
+          Copy-Item -Path 'artifacts/publish/win-x64/*' -Destination $staging -Recurse -Force
+          Copy-Item -Path 'artifacts/publish/cli/irontrace.exe' -Destination $staging -Force
+          Copy-Item -Path 'LICENSE', 'THIRD_PARTY_NOTICES.md' -Destination $staging -Force
+          if (Test-Path $zipName) { Remove-Item $zipName -Force }
+          Compress-Archive -Path $staging -DestinationPath $zipName
+          "zip_name=$zipName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "Created $zipName"
+
+      - name: Upload nightly artifact
+        if: steps.version.outputs.is_tag != 'true'
+        uses: actions/upload-artifact@6546280a86b273fd0800de8d256dd7957411a814 # v4.6.0
+        with:
+          name: IronTrace-nightly-win-x64
+          path: ${{ steps.package.outputs.zip_name }}
+          retention-days: 7
+
+      - name: Create GitHub Release
+        if: steps.version.outputs.is_tag == 'true'
+        uses: softprops/action-gh-release@7a47279023e49af948fe249daa7d3650d5b44340 # v2.2.2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: IronTrace ${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          files: ${{ steps.package.outputs.zip_name }}
