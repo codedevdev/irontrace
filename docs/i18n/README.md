@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/irontrace-banner.png" alt="IronTrace — Windows Hardware &amp; Forensic Integrity Scanner" width="100%">
+</p>
+
 # IronTrace — Translations / Переклади / Übersetzungen
 
 <p align="center">
