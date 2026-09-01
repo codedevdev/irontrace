@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "recencyDecayDays": 180,
+  "categories": {
+    "cheat_brands": {
+      "defaultSeverity": "medium",
+      "brandSeverity": "high",
+      "keywords": [
+        "engineowning", "phantomoverlay", "x22", "neverlose", "memesense", "fatality",
+        "primordial", "skeet", "onetap", "aimware", "kernaim", "cosmocheats",
+        "phantom eft", "cheatvault", "securecheats", "overlord", "zhex", "gcaimx"
+      ]
+    },
+    "hwid_spoofers": {
+      "defaultSeverity": "high",
+      "keywords": [
+        "hwid", "spoofer", "synce", "tracex", "slothytech", "pokespoof", "sechacks"
+      ]
+    },
+    "dma_dev_artifacts": {
+      "defaultSeverity": "medium",
+      "keywords": [
+        "pcileech", "leechcore", "ft601", "ft2232", "_top.bin", "vivado", "fpga"
+      ]
+    },
+    "input_devices": {
+      "defaultSeverity": "medium",
+      "keywords": [
+        "xim", "cronus", "reasnow", "kmbox", "titan", "zen studio", "collective minds"
+      ]
+    },
+    "dual_use_tools": {
+      "defaultSeverity": "medium",
+      "keywords": [
+        "cheatengine", "cheat engine", "processhacker", "x64dbg", "x32dbg", "ida64", "ida pro"
+      ]
+    },
+    "injectors": {
+      "defaultSeverity": "high",
+      "keywords": [
+        "xenos", "extreme_injector", "gdinjector", "manual_map", "syringe", "chimera", "winject"
+      ]
+    },
+    "ai_vision": {
+      "defaultSeverity": "medium",
+      "keywords": [
+        "aimmy", "sunone_aimbot", "ultralytics", "yolov8", "pyautogui", "onnxruntime"
+      ]
+    },
+    "anticheat_products": {
+      "defaultSeverity": "information",
+      "keywords": [
+        "easyanticheat", "eac", "battleye", "beservice", "vgc", "vgk", "ricochet", "mhyprot"
+      ]
+    },
+    "overlay_software": {
+      "defaultSeverity": "information",
+      "keywords": [
+        "discord", "nvidia share", "geforce experience", "obs64", "overwolf", "steamwebhelper"
+      ]
+    },
+    "console_rig": {
+      "defaultSeverity": "medium",
+      "keywords": [
+        "elgato", "avermedia", "capture", "obs virtualcam", "reafir", "voicemeeter"
+      ]
+    },
+    "spoofer_registry": {
+      "defaultSeverity": "medium",
+      "keywords": [
+        "spoof", "hwid", "traceclean", "machineguid"
+      ]
+    }
+  },
+  "vendorAllowlist": [
+    "microsoft", "nvidia", "amd", "intel", "logitech", "razer", "steelseries", "corsair",
+    "valve", "discord", "obs project", "elgato"
+  ],
+  "knownGameProcesses": [
+    "cs2.exe", "valorant.exe", "r5apex.exe", "cod.exe", "escapefromtarkov.exe", "rustclient.exe"
+  ]
+}

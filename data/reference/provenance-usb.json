@@ -1,0 +1,8 @@
+{
+  "name": "usb.ids",
+  "sourceUrl": "http://www.linux-usb.org/usb.ids",
+  "license": "See upstream usb.ids header",
+  "retrievedAt": "2026-08-21T00:00:00Z",
+  "note": "Seed subset for offline bundling; replace with full usb.ids via HardwareDbImporter --mode usb",
+  "schemaVersion": 1
+}

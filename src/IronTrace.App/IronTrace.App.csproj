@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace>IronTrace.App</RootNamespace>
+    <AssemblyName>IronTrace</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IronTrace.Contracts\IronTrace.Contracts.csproj" />
+    <ProjectReference Include="..\IronTrace.Core\IronTrace.Core.csproj" />
+    <ProjectReference Include="..\IronTrace.Windows\IronTrace.Windows.csproj" />
+    <ProjectReference Include="..\IronTrace.Hardware\IronTrace.Hardware.csproj" />
+    <ProjectReference Include="..\IronTrace.Fingerprints\IronTrace.Fingerprints.csproj" />
+    <ProjectReference Include="..\IronTrace.RiskEngine\IronTrace.RiskEngine.csproj" />
+    <ProjectReference Include="..\IronTrace.Reporting\IronTrace.Reporting.csproj" />
+    <ProjectReference Include="..\IronTrace.Forensics\IronTrace.Forensics.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\data\reference\pci-reference.db" Link="reference\pci-reference.db" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\pci-reference.db')" />
+    <Content Include="..\..\data\reference\usb-reference.db" Link="reference\usb-reference.db" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\usb-reference.db')" />
+    <Content Include="..\..\data\reference\loldrivers-reference.db" Link="reference\loldrivers-reference.db" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\loldrivers-reference.db')" />
+    <Content Include="..\..\data\reference\provenance.json" Link="reference\provenance.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\provenance.json')" />
+    <Content Include="..\..\data\reference\provenance-usb.json" Link="reference\provenance-usb.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\provenance-usb.json')" />
+    <Content Include="..\..\data\reference\provenance-loldrivers.json" Link="reference\provenance-loldrivers.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\provenance-loldrivers.json')" />
+    <Content Include="..\..\data\reference\trust\irontrace-ref.pub" Link="reference\trust\irontrace-ref.pub" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\trust\irontrace-ref.pub')" />
+    <Content Include="..\..\data\reference\dma-watchlist.json" Link="reference\dma-watchlist.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\dma-watchlist.json')" />
+    <Content Include="..\..\data\reference\cheat-signatures.json" Link="reference\cheat-signatures.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\cheat-signatures.json')" />
+    <Content Include="..\..\data\reference\ms-vulnerable-driver-blocklist.json" Link="reference\ms-vulnerable-driver-blocklist.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\data\reference\ms-vulnerable-driver-blocklist.json')" />
+  </ItemGroup>
+</Project>

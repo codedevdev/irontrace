@@ -1,0 +1,10 @@
+# Minimal usb.ids seed for IronTrace offline reference (subset for tests/bundling).
+# Source format compatible with http://www.linux-usb.org/usb.ids
+046D  Logitech, Inc.
+	C077  M105 Optical Mouse
+	C31C  Keyboard K120
+0781  SanDisk Corp.
+	5583  Ultra Fit
+1D6B  Linux Foundation
+	0002  2.0 root hub
+	0003  3.0 root hub

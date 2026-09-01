@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "description": "Defensive DMA CFW stock-identity watchlist for IronTrace. Not a ban list.",
+  "entries": [
+    {
+      "vendorId": "10EE",
+      "deviceId": "0666",
+      "subsystemVendorId": null,
+      "subsystemDeviceId": null,
+      "label": "Stock PCILeech / Squirrel-class FPGA",
+      "severity": "stock",
+      "notes": "Public upstream default identity; lab Xilinx boards can match."
+    }
+  ]
+}

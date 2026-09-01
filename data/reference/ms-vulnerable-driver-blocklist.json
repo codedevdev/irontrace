@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "source": "Microsoft Vulnerable Driver Blocklist (offline snapshot)",
+  "entries": [
+    { "fileName": "capcom.sys", "sha256": null },
+    { "fileName": "gdrv.sys", "sha256": null },
+    { "fileName": "asio.sys", "sha256": null },
+    { "fileName": "cpuz141.sys", "sha256": null },
+    { "fileName": "iqvw64e.sys", "sha256": null },
+    { "fileName": "rtcore64.sys", "sha256": null },
+    { "fileName": "dbutil_2_3.sys", "sha256": null },
+    { "fileName": "procexp152.sys", "sha256": null },
+    { "fileName": "phymemx64.sys", "sha256": null },
+    { "fileName": "msio64.sys", "sha256": null }
+  ]
+}

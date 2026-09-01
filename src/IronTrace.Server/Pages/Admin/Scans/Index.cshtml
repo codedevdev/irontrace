@@ -1,0 +1,47 @@
+@page "/admin/scans"
+@model IronTrace.Server.Pages.Admin.Scans.IndexModel
+@using IronTrace.Contracts.Api
+@{
+    ViewData["Title"] = "Scans";
+}
+<div class="card">
+  <h1>Scan submissions</h1>
+  <form method="get" style="margin-bottom:16px;">
+    <label>Status</label>
+    <select name="Status" asp-for="Status">
+      <option value="">All</option>
+      @foreach (ScanReviewStatus s in Enum.GetValues<ScanReviewStatus>())
+      {
+        <option value="@s">@s</option>
+      }
+    </select>
+    <button type="submit">Filter</button>
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th>Received</th>
+        <th>Verdict</th>
+        <th>Review</th>
+        <th>Schema</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    @foreach (var s in Model.Scans)
+    {
+      <tr>
+        <td>@s.ReceivedAt.ToString("u")</td>
+        <td>@(s.Verdict ?? "—")</td>
+        <td>@s.ReviewStatus</td>
+        <td>@s.ReportSchemaVersion</td>
+        <td><a href="/admin/scans/@s.Id">Open</a></td>
+      </tr>
+    }
+    </tbody>
+  </table>
+  @if (Model.Scans.Count == 0)
+  {
+    <p class="muted">No scans yet.</p>
+  }
+</div>

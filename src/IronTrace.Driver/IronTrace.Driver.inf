@@ -1,0 +1,50 @@
+;
+; IronTrace.Driver — ROOT-enumerated software control device (lab / test-signing).
+; Production Authenticode + attestation signing is documented in README; not required for MVP.
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = %ManufacturerName%
+DriverVer   = 08/25/2026,10.0.4.0
+CatalogFile = IronTrace.Driver.cat
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+IronTrace.Driver.sys = 1,,
+
+[Manufacturer]
+%ManufacturerName% = Standard,NTamd64
+
+[Standard.NTamd64]
+%IronTrace.DeviceDesc% = IronTrace_Device, Root\IronTrace
+
+[IronTrace_Device.NT]
+CopyFiles = Drivers_Dir
+
+[Drivers_Dir]
+IronTrace.Driver.sys
+
+[IronTrace_Device.NT.Services]
+AddService = IronTrace,0x00000002, IronTrace_Service_Inst
+
+[IronTrace_Service_Inst]
+DisplayName    = %IronTrace.SVCDESC%
+ServiceType    = 1
+StartType      = 3
+ErrorControl   = 1
+ServiceBinary  = %12%\IronTrace.Driver.sys
+
+[Strings]
+ManufacturerName = "IronTrace"
+DiskName = "IronTrace Driver Installation Disk"
+IronTrace.DeviceDesc = "IronTrace Kernel Evidence Driver"
+IronTrace.SVCDESC = "IronTrace Kernel Evidence Service"

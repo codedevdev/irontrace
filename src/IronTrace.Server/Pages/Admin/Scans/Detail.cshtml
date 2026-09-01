@@ -1,0 +1,49 @@
+@page "/admin/scans/{id:guid}"
+@model IronTrace.Server.Pages.Admin.Scans.DetailModel
+@using IronTrace.Contracts.Api
+@{
+    ViewData["Title"] = "Scan detail";
+    var s = Model.Scan!;
+}
+<div class="card">
+  <p><a href="/admin/scans">← Back</a></p>
+  <h1>Scan @s.Id</h1>
+  <p class="muted">Session @s.SessionId · Received @s.ReceivedAt.ToString("u")</p>
+  <p><strong>Verdict:</strong> @(s.Verdict ?? "—")</p>
+  @if (!string.IsNullOrWhiteSpace(Model.ForensicBanner))
+  {
+    <p><strong>Forensic banner:</strong> @Model.ForensicBanner</p>
+  }
+  <p>@s.Summary</p>
+  <p class="muted">App @s.ApplicationVersion · Schema @s.ReportSchemaVersion · Host hash @(s.HostMachineNameHash ?? "—")</p>
+</div>
+
+<div class="card">
+  <h2>Forensic evidence</h2>
+  <pre style="white-space:pre-wrap;font-size:13px;">@Model.ForensicPreview</pre>
+</div>
+
+<div class="card">
+  <h2>Findings (preview)</h2>
+  <pre style="white-space:pre-wrap;font-size:13px;">@Model.FindingsPreview</pre>
+</div>
+
+<div class="card">
+  <h2>Review</h2>
+  <form method="post">
+    <div style="margin-bottom:12px;">
+      <label>Status</label><br />
+      <select asp-for="ReviewStatus">
+        @foreach (ScanReviewStatus st in Enum.GetValues<ScanReviewStatus>())
+        {
+          <option value="@st">@st</option>
+        }
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label>Notes</label><br />
+      <textarea asp-for="ReviewNotes" rows="4" style="width:100%;"></textarea>
+    </div>
+    <button type="submit">Save review</button>
+  </form>
+</div>

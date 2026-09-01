@@ -1,0 +1,21 @@
+@page "/admin/login"
+@model IronTrace.Server.Pages.Admin.LoginModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+<div class="card" style="max-width:420px;margin:48px auto;">
+  <h1>Admin login</h1>
+  <p class="muted">Sign in with an Admin API key (it_admin_…).</p>
+  @if (!string.IsNullOrEmpty(Model.Error))
+  {
+    <p class="error">@Model.Error</p>
+  }
+  <form method="post">
+    <div style="margin-bottom:12px;">
+      <label>API key</label><br />
+      <input asp-for="Input.ApiKey" type="password" style="width:100%;" autocomplete="off" />
+    </div>
+    <button type="submit">Sign in</button>
+  </form>
+</div>

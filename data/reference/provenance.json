@@ -1,0 +1,9 @@
+﻿{
+  "name": "pci.ids",
+  "sourceUrl": "https://pci-ids.ucw.cz/v2.2/pci.ids",
+  "license": "BSD-3-Clause",
+  "retrievedAt": "2026-08-21T20:48:36.4463419+03:00",
+  "pciIdsContentHash": "e49cc5ddacb8857681a20296a1e137cf6ea29daccab0154258a45e9cfda13cef",
+  "databaseSha256": "3f4a68726b578b4d237129ba05d4e15366d2b9616a1eb668e4203e1d7d103578",
+  "schemaVersion": 1
+}

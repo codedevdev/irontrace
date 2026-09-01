@@ -1,0 +1,24 @@
+[
+  {
+    "Id": "capcom-example",
+    "Category": "vulnerable driver",
+    "Tags": ["Capcom.sys"],
+    "KnownVulnerableSamples": [
+      {
+        "Filename": "capcom.sys",
+        "SHA256": "da39a3ee5e6b4b0d3255bfef95601890afd80709aaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ]
+  },
+  {
+    "Id": "gdrv-example",
+    "Category": "vulnerable driver",
+    "Tags": ["gdrv.sys"],
+    "KnownVulnerableSamples": [
+      {
+        "Filename": "gdrv.sys",
+        "SHA256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ]
+  }
+]

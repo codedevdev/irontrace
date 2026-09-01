@@ -1,0 +1,37 @@
+## .NET
+bin/
+obj/
+artifacts/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+TestResults/
+*.nupkg
+project.lock.json
+
+## OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+## IDE / tools
+.idea/
+*.swp
+*.log
+
+## Local secrets / machine data
+**/appsettings.*.local.json
+*.pfx
+*.p12
+data/reference/trust/*.priv.pem
+data/reference/trust/*private*
+**/upload-api-key.bin
+
+## Reference DB downloads (keep bundled snapshot)
+data/reference/cache/
+data/reference/*.tmp
+data/reference/*.bak
+tools/**/downloads/
+docs/research/

@@ -1,0 +1,8 @@
+{
+  "name": "LOLDrivers",
+  "sourceUrl": "https://www.loldrivers.io/",
+  "license": "Apache-2.0",
+  "retrievedAt": "2026-08-21T00:00:00Z",
+  "note": "Seed snapshot for offline matching; replace with full drivers.json via HardwareDbImporter --mode loldrivers",
+  "schemaVersion": 1
+}

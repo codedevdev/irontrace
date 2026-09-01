@@ -1,0 +1,505 @@
+<Window x:Class="IronTrace.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:IronTrace.App.ViewModels"
+        Title="IronTrace"
+        Height="780" Width="1120"
+        MinHeight="640" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgBrush}"
+        Foreground="{StaticResource TextBrush}"
+        FontFamily="{StaticResource BodyFont}">
+  <Window.Resources>
+    <DataTemplate x:Key="DeviceRowTemplate" DataType="{x:Type vm:DeviceListItem}">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+          <TextBlock Text="{Binding Ids}" FontFamily="{StaticResource IdFont}" FontSize="11"
+                     Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0"/>
+          <TextBlock FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis">
+            <Run Text="{Binding VendorName, TargetNullValue=Unresolved}"/>
+            <Run Text=" · "/>
+            <Run Text="{Binding DeviceName, TargetNullValue=—}"/>
+          </TextBlock>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
+          <Border Background="{Binding SignatureStatusEnum, Converter={StaticResource SignatureBrush}}"
+                  CornerRadius="4" Padding="8,3" HorizontalAlignment="Right">
+            <TextBlock Text="{Binding SignatureStatus}" FontSize="11" Foreground="White"/>
+          </Border>
+          <TextBlock Text="{Binding KindLabel}" FontSize="11" Foreground="{StaticResource MutedBrush}"
+                     HorizontalAlignment="Right" Margin="0,6,0,0"/>
+          <TextBlock FontSize="11" Foreground="{StaticResource WarnBrush}" HorizontalAlignment="Right"
+                     Visibility="{Binding NeedsReview, Converter={StaticResource BoolToVis}}">
+            Review
+          </TextBlock>
+        </StackPanel>
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="FindingRowTemplate" DataType="{x:Type vm:FindingListItem}">
+      <StackPanel>
+        <DockPanel>
+          <Border DockPanel.Dock="Left" Background="{Binding SeverityEnum, Converter={StaticResource SeverityBrush}}"
+                  CornerRadius="4" Padding="8,3" Margin="0,0,10,0" VerticalAlignment="Center">
+            <TextBlock Text="{Binding Severity}" FontSize="11" Foreground="White"/>
+          </Border>
+          <TextBlock Text="{Binding Code}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        </DockPanel>
+        <TextBlock Text="{Binding Title}" Margin="0,6,0,0"/>
+        <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                   FontSize="12" Margin="0,4,0,0"/>
+        <TextBlock Text="{Binding TriageHint}" TextWrapping="Wrap" Foreground="{StaticResource AccentBrush}"
+                   FontSize="12" Margin="0,6,0,0"
+                   Visibility="{Binding TriageHint, Converter={StaticResource NullToVis}}"/>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DetailLineTemplate" DataType="{x:Type vm:DetailLine}">
+      <Grid Margin="0,0,0,8">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="140"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label}" Foreground="{StaticResource MutedBrush}" FontSize="12"/>
+        <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" FontSize="12"
+                   FontFamily="{StaticResource IdFont}"/>
+      </Grid>
+    </DataTemplate>
+  </Window.Resources>
+
+  <Grid>
+    <Grid.Background>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#0B1016" Offset="0"/>
+        <GradientStop Color="#0E1820" Offset="0.55"/>
+        <GradientStop Color="#0B1412" Offset="1"/>
+      </LinearGradientBrush>
+    </Grid.Background>
+
+    <!-- HOME -->
+    <Grid Margin="48" Visibility="{Binding ViewState, Converter={StaticResource StateToVis}, ConverterParameter=Home}">
+      <Border Width="620" Height="620" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.18" IsHitTestVisible="False">
+        <Border.Background>
+          <RadialGradientBrush>
+            <GradientStop Color="#2F9E8A" Offset="0"/>
+            <GradientStop Color="#00000000" Offset="1"/>
+          </RadialGradientBrush>
+        </Border.Background>
+      </Border>
+      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="520">
+        <TextBlock Text="IronTrace" FontFamily="{StaticResource DisplayFont}" FontSize="52" FontWeight="SemiBold"
+                   HorizontalAlignment="Center"/>
+        <TextBlock Text="Hardware &amp; Forensic Integrity Verification" FontSize="18" Foreground="{StaticResource MutedBrush}"
+                   Margin="0,10,0,28" HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
+          <Button Content="Admin Scan" Command="{Binding StartAdminScanCommand}" MinWidth="160" Margin="0,0,8,0"/>
+          <Button Content="Self-Audit" Command="{Binding StartSelfAuditScanCommand}" MinWidth="160"/>
+        </StackPanel>
+        <Button Content="Start Hardware Check (legacy)" Command="{Binding StartScanCommand}"
+                HorizontalAlignment="Center" MinWidth="280" Opacity="0.7"/>
+        <CheckBox Content="Include process/service inventory (privacy opt-in)"
+                  IsChecked="{Binding IncludeProcessInventory}"
+                  Margin="0,8,0,0" HorizontalAlignment="Center"
+                  Foreground="{StaticResource MutedBrush}" FontSize="12"/>
+        <CheckBox Content="Include memory scan via PE-sieve (admin + explicit consent)"
+                  IsChecked="{Binding IncludeMemoryScan}"
+                  IsEnabled="{Binding MemoryScanToolAvailable}"
+                  Margin="0,6,0,0" HorizontalAlignment="Center"
+                  Foreground="{StaticResource MutedBrush}" FontSize="12"/>
+        <Border Background="#2A2418" BorderBrush="{StaticResource WarnBrush}" BorderThickness="1"
+                CornerRadius="6" Padding="12,10" Margin="0,10,0,0"
+                Visibility="{Binding MemoryScanAvailabilityLine, Converter={StaticResource NullToVis}}">
+          <StackPanel>
+            <TextBlock Text="Memory scan tool not found" FontWeight="SemiBold" Foreground="{StaticResource WarnBrush}"/>
+            <TextBlock Text="{Binding MemoryScanAvailabilityLine}" TextWrapping="Wrap" FontSize="12"
+                       Foreground="{StaticResource MutedBrush}" Margin="0,6,0,0"/>
+            <TextBlock Text="Hardware, drivers, BYOVD, execution artifacts, and HWID checks still run normally."
+                       TextWrapping="Wrap" FontSize="11" Foreground="{StaticResource MutedBrush}" Margin="0,6,0,0"/>
+          </StackPanel>
+        </Border>
+        <CheckBox Content="Include PnP device history (privacy opt-in)"
+                  IsChecked="{Binding IncludePnpDeviceHistory}"
+                  Margin="0,6,0,0" HorizontalAlignment="Center"
+                  Foreground="{StaticResource MutedBrush}" FontSize="12"/>
+        <TextBlock Text="User-mode scan · offline reference DB · evidence-based results — not automatic bans"
+                   FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,14,0,0"
+                   HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+      </StackPanel>
+    </Grid>
+
+    <!-- SCANNING -->
+    <Grid Margin="48" Visibility="{Binding ViewState, Converter={StaticResource StateToVis}, ConverterParameter=Scanning}">
+      <StackPanel VerticalAlignment="Center" MaxWidth="640" HorizontalAlignment="Center">
+        <TextBlock Text="Scanning" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding ProgressMessage}" FontSize="15" Foreground="{StaticResource MutedBrush}"
+                   Margin="0,14,0,22" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+        <ProgressBar Height="8" Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"
+                     Foreground="{StaticResource AccentBrush}" Background="#243040"/>
+        <StackPanel Margin="0,28,0,0">
+          <TextBlock Margin="0,0,0,8" Foreground="{StaticResource MutedBrush}" Text="• Checking Windows security"/>
+          <TextBlock Margin="0,0,0,8" Foreground="{StaticResource MutedBrush}" Text="• Checking motherboard"/>
+          <TextBlock Margin="0,0,0,8" Foreground="{StaticResource MutedBrush}" Text="• Enumerating PCIe &amp; USB devices"/>
+          <TextBlock Margin="0,0,0,8" Foreground="{StaticResource MutedBrush}" Text="• Driver trust / LOLDrivers / Code Integrity"/>
+          <TextBlock Foreground="{StaticResource MutedBrush}" Text="• Calculating integrity result"/>
+        </StackPanel>
+      </StackPanel>
+    </Grid>
+
+    <!-- RESULT -->
+    <Grid Margin="36" Visibility="{Binding ViewState, Converter={StaticResource StateToVis}, ConverterParameter=Result}">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+          <Button Content="Browse devices" Command="{Binding ShowAdvancedCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0"/>
+          <Button Content="Findings" Command="{Binding ShowFindingsCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0"/>
+          <Button Content="Export report" Command="{Binding ExportReportCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0"/>
+          <Button Content="Upload to server" Command="{Binding UploadToServerCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0"/>
+          <Button Content="New scan" Command="{Binding BackHomeCommand}"/>
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock Text="Hardware Integrity" FontSize="14" Foreground="{StaticResource MutedBrush}"/>
+            <TextBlock Text="{Binding VerdictText}" FontSize="40" FontWeight="SemiBold" Margin="0,4,0,8"/>
+            <TextBlock Text="{Binding ForensicBannerLine}" Foreground="{StaticResource AccentBrush}" Margin="0,0,0,8"
+                       Visibility="{Binding ForensicBannerLine, Converter={StaticResource NullToVis}}"/>
+            <TextBlock Text="{Binding SummaryText}" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,20"/>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+              <StackPanel>
+                <TextBlock Text="PLATFORM" Style="{StaticResource SectionTitle}"/>
+                <ItemsControl ItemsSource="{Binding PlatformFeatures}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <DockPanel Margin="0,0,0,8">
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding Mark}" Width="22" FontWeight="SemiBold"/>
+                        <TextBlock DockPanel.Dock="Right" Text="{Binding State}" Foreground="{StaticResource MutedBrush}" FontSize="12"/>
+                        <TextBlock Text="{Binding Name}"/>
+                      </DockPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+              <StackPanel>
+                <TextBlock Text="DMA PROTECTION" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="{Binding DmaProtectionLine}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding KernelSummaryLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="{Binding VerificationSummaryLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="{Binding MeasuredBootSummaryLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="{Binding DmaReviewSummaryLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="{Binding MemoryScanResultLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"
+                           Visibility="{Binding MemoryScanResultLine, Converter={StaticResource NullToVis}}"/>
+              </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+              <StackPanel>
+                <TextBlock Text="DRIVER TRUST" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="{Binding DriverTrustLine}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding CiSummaryLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="{Binding ElevationLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="{Binding ReferenceDbLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="{Binding MotherboardSerialLine}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                  <Button Content="Show/hide serial (local)" Command="{Binding ToggleShowRawSerialCommand}"
+                          Style="{StaticResource SecondaryButton}" Padding="12,6" FontSize="12" Margin="0,0,8,0"/>
+                  <Button Content="Check reference updates" Command="{Binding CheckReferenceUpdatesCommand}"
+                          Style="{StaticResource SecondaryButton}" Padding="12,6" FontSize="12"/>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+              <StackPanel>
+                <TextBlock Text="EXPORT PRIVACY" Style="{StaticResource SectionTitle}"/>
+                <CheckBox Content="Include serial hash" IsChecked="{Binding ExportIncludeSerialHash}" Margin="0,0,0,6"/>
+                <CheckBox Content="Include driver image paths" IsChecked="{Binding ExportIncludeDriverPaths}" Margin="0,0,0,6"/>
+                <CheckBox Content="Include Code Integrity events" IsChecked="{Binding ExportIncludeCiEvents}" Margin="0,0,0,6"/>
+                <CheckBox Content="Include instance IDs" IsChecked="{Binding ExportIncludeInstanceIds}" Margin="0,0,0,6"/>
+                <CheckBox Content="Include raw serial (discouraged)" IsChecked="{Binding ExportIncludeRawSerial}" Margin="0,0,0,6"/>
+                <CheckBox Content="Include Measured Boot PCR digests" IsChecked="{Binding ExportIncludePcrDigests}" Margin="0,0,0,6"/>
+              </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}">
+              <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                  <Button DockPanel.Dock="Right" Content="Open inventory" Command="{Binding ShowAdvancedCommand}"
+                          Style="{StaticResource SecondaryButton}" Padding="12,6" FontSize="12"/>
+                  <StackPanel>
+                    <TextBlock Text="PCIE DEVICES" Style="{StaticResource SectionTitle}" Margin="0"/>
+                    <TextBlock Text="{Binding DeviceSummaryLine}" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,6,0,0"/>
+                  </StackPanel>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding PreviewDevices}" Style="{StaticResource DeviceListBox}"
+                         ItemTemplate="{StaticResource DeviceRowTemplate}">
+                  <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource DeviceListItem}">
+                      <EventSetter Event="MouseDoubleClick" Handler="DevicePreview_MouseDoubleClick"/>
+                    </Style>
+                  </ListBox.ItemContainerStyle>
+                </ListBox>
+                <TextBlock DockPanel.Dock="Bottom" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource MutedBrush}"
+                           Text="Double-click a device for identity, driver, and signature analysis."/>
+              </DockPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </DockPanel>
+    </Grid>
+
+    <!-- ADVANCED -->
+    <Grid Margin="28" Visibility="{Binding ViewState, Converter={StaticResource StateToVis}, ConverterParameter=Advanced}">
+      <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+          <Button DockPanel.Dock="Left" Content="← Back" Command="{Binding BackToResultCommand}" Style="{StaticResource SecondaryButton}" Padding="14,8"/>
+          <StackPanel Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
+            <Button Content="PCI" Command="{Binding ShowAdvancedCommand}" Margin="0,0,8,0"
+                    Style="{StaticResource FilterChip}"/>
+            <Button Content="USB" Command="{Binding ShowUsbCommand}" Margin="0,0,8,0"
+                    Style="{StaticResource FilterChip}"/>
+            <Button Content="Drivers" Command="{Binding ShowDriversCommand}" Margin="0,0,8,0"
+                    Style="{StaticResource FilterChip}"/>
+            <Button Content="Kernel" Command="{Binding ShowKernelCommand}" Margin="0,0,8,0"
+                    Style="{StaticResource FilterChip}"/>
+            <Button Content="CI Log" Command="{Binding ShowCodeIntegrityCommand}" Margin="0,0,8,0"
+                    Style="{StaticResource FilterChip}"/>
+            <Button Content="Findings" Command="{Binding ShowFindingsCommand}" Style="{StaticResource FilterChip}"/>
+          </StackPanel>
+          <TextBlock Text="Advanced inventory" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0"/>
+        </DockPanel>
+
+        <!-- Devices tab -->
+        <Grid Visibility="{Binding AdvancedTab, Converter={StaticResource StateToVis}, ConverterParameter=Devices}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,12">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+              <Button Content="All" Command="{Binding SetDeviceFilterCommand}" CommandParameter="All" Style="{StaticResource FilterChip}"/>
+              <Button Content="Physical" Command="{Binding SetDeviceFilterCommand}" CommandParameter="Physical" Style="{StaticResource FilterChip}"/>
+              <Button Content="Virtual" Command="{Binding SetDeviceFilterCommand}" CommandParameter="Virtual" Style="{StaticResource FilterChip}"/>
+              <Button Content="Review" Command="{Binding SetDeviceFilterCommand}" CommandParameter="Review" Style="{StaticResource FilterChip}"/>
+            </StackPanel>
+            <TextBox Style="{StaticResource SearchBox}" Text="{Binding DeviceSearch, UpdateSourceTrigger=PropertyChanged}"
+                     Width="280" HorizontalAlignment="Right"
+                     Tag="Search name, VEN, provider…"/>
+          </DockPanel>
+          <ListBox Grid.Row="1" ItemsSource="{Binding DevicesView}" Style="{StaticResource DeviceListBox}"
+                   ItemContainerStyle="{StaticResource DeviceListItem}"
+                   ItemTemplate="{StaticResource DeviceRowTemplate}"
+                   MouseDoubleClick="DeviceList_MouseDoubleClick"/>
+        </Grid>
+
+        <!-- USB tab -->
+        <Grid Visibility="{Binding AdvancedTab, Converter={StaticResource StateToVis}, ConverterParameter=Usb}">
+          <ListBox ItemsSource="{Binding UsbDevices}" Style="{StaticResource DeviceListBox}"
+                   ItemContainerStyle="{StaticResource DeviceListItem}">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Margin="0,4">
+                  <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding Ids}" FontFamily="{StaticResource IdFont}" Foreground="{StaticResource MutedBrush}" FontSize="12"/>
+                  <TextBlock FontSize="12" Foreground="{StaticResource MutedBrush}">
+                    <Run Text="{Binding VendorName, TargetNullValue=—}"/>
+                    <Run Text=" / "/>
+                    <Run Text="{Binding ProductName, TargetNullValue=—}"/>
+                  </TextBlock>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+
+        <!-- Drivers / LOLDrivers tab -->
+        <Grid Visibility="{Binding AdvancedTab, Converter={StaticResource StateToVis}, ConverterParameter=Drivers}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="{Binding DriverTrustLine}" Margin="0,0,0,12"
+                       Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+            <ListBox ItemsSource="{Binding VulnerableMatches}" Style="{StaticResource DeviceListBox}"
+                     ItemContainerStyle="{StaticResource DeviceListItem}">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Margin="0,4">
+                    <TextBlock Text="{Binding FileName}" FontWeight="SemiBold"/>
+                    <TextBlock FontSize="12" Foreground="{StaticResource MutedBrush}">
+                      <Run Text="{Binding MatchKind}"/>
+                      <Run Text=" · "/>
+                      <Run Text="{Binding Title}"/>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Evidence}" FontSize="12" TextWrapping="Wrap"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </DockPanel>
+        </Grid>
+
+        <!-- Kernel evidence tab -->
+        <Grid Visibility="{Binding AdvancedTab, Converter={StaticResource StateToVis}, ConverterParameter=Kernel}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="{Binding KernelSummaryLine}" Margin="0,0,0,12"
+                       Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+            <ListBox ItemsSource="{Binding KernelDevices}" Style="{StaticResource DeviceListBox}"
+                     ItemContainerStyle="{StaticResource DeviceListItem}">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Margin="0,4">
+                    <TextBlock FontWeight="SemiBold">
+                      <Run Text="{Binding Bdf}"/>
+                      <Run Text=" · "/>
+                      <Run Text="{Binding ConfigIds}"/>
+                    </TextBlock>
+                    <TextBlock Text="{Binding ClassLine}" FontSize="12"
+                               Foreground="{StaticResource MutedBrush}"/>
+                    <TextBlock FontSize="12" Foreground="{StaticResource MutedBrush}">
+                      <Run Text="{Binding CapsBarsLine}"/>
+                      <Run Text=" · "/>
+                      <Run Text="{Binding ExpressLine}"/>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Notes}" FontSize="12" TextWrapping="Wrap"
+                               Visibility="{Binding Notes, Converter={StaticResource NullToVis}}"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </DockPanel>
+        </Grid>
+
+        <!-- CI log tab -->
+        <Grid Visibility="{Binding AdvancedTab, Converter={StaticResource StateToVis}, ConverterParameter=Ci}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="{Binding CiSummaryLine}" Margin="0,0,0,12"
+                       Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+            <ListBox ItemsSource="{Binding CodeIntegrityEvents}" Style="{StaticResource DeviceListBox}"
+                     ItemContainerStyle="{StaticResource DeviceListItem}">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Margin="0,4">
+                    <TextBlock FontWeight="SemiBold">
+                      <Run Text="Event "/>
+                      <Run Text="{Binding EventId}"/>
+                      <Run Text=" · "/>
+                      <Run Text="{Binding Time}"/>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Path}" FontFamily="{StaticResource IdFont}" FontSize="12"
+                               Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </DockPanel>
+        </Grid>
+
+        <!-- Findings tab -->
+        <Grid Visibility="{Binding AdvancedTab, Converter={StaticResource StateToVis}, ConverterParameter=Findings}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,12">
+            <CheckBox DockPanel.Dock="Right" Content="DMA / CFW only" IsChecked="{Binding FindingsDmaFilter}"
+                      VerticalAlignment="Center" Margin="12,0,0,0"/>
+            <TextBox Style="{StaticResource SearchBox}" Text="{Binding FindingSearch, UpdateSourceTrigger=PropertyChanged}"
+                     Width="320" HorizontalAlignment="Left"/>
+          </DockPanel>
+          <ListBox Grid.Row="1" ItemsSource="{Binding FindingsView}" Style="{StaticResource DeviceListBox}"
+                   ItemContainerStyle="{StaticResource DeviceListItem}"
+                   ItemTemplate="{StaticResource FindingRowTemplate}"
+                   MouseDoubleClick="FindingList_MouseDoubleClick"/>
+        </Grid>
+      </DockPanel>
+    </Grid>
+
+    <!-- DEVICE DETAIL -->
+    <Grid Margin="28" Visibility="{Binding ViewState, Converter={StaticResource StateToVis}, ConverterParameter=Device}">
+      <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+          <Button Content="← Inventory" Command="{Binding BackToAdvancedCommand}" Style="{StaticResource SecondaryButton}" Padding="14,8"/>
+          <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+            <TextBlock Text="{Binding DeviceDetail.ListItem.Title}" FontSize="22" FontWeight="SemiBold"/>
+            <TextBlock Text="{Binding DeviceDetail.ListItem.Ids}" FontFamily="{StaticResource IdFont}"
+                       Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,4,0,0"/>
+          </StackPanel>
+          <Border DockPanel.Dock="Right" VerticalAlignment="Center"
+                  Background="{Binding DeviceDetail.SignatureStatusEnum, Converter={StaticResource SignatureBrush}}"
+                  CornerRadius="6" Padding="12,6">
+            <TextBlock Text="{Binding DeviceDetail.SignatureStatus}" Foreground="White" FontWeight="SemiBold"/>
+          </Border>
+        </DockPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="1.1*"/>
+              <ColumnDefinition Width="16"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+              <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+                <StackPanel>
+                  <TextBlock Text="IDENTITY" Style="{StaticResource SectionTitle}"/>
+                  <ItemsControl ItemsSource="{Binding DeviceDetail.IdentityLines}" ItemTemplate="{StaticResource DetailLineTemplate}"/>
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+                <StackPanel>
+                  <TextBlock Text="TOPOLOGY" Style="{StaticResource SectionTitle}"/>
+                  <ItemsControl ItemsSource="{Binding DeviceDetail.TopologyLines}" ItemTemplate="{StaticResource DetailLineTemplate}"/>
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource CardBorder}">
+                <StackPanel>
+                  <TextBlock Text="HARDWARE IDS" Style="{StaticResource SectionTitle}"/>
+                  <ItemsControl ItemsSource="{Binding DeviceDetail.HardwareIds}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding}" FontFamily="{StaticResource IdFont}" FontSize="11"
+                                   Foreground="{StaticResource MutedBrush}" Margin="0,0,0,4" TextWrapping="Wrap"/>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2">
+              <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14" BorderBrush="{StaticResource AccentBrush}">
+                <StackPanel>
+                  <TextBlock Text="SIGNATURE ANALYSIS" Style="{StaticResource SectionTitle}"/>
+                  <TextBlock Text="{Binding DeviceDetail.SignatureAnalysis}" TextWrapping="Wrap" Margin="0,0,0,14"/>
+                  <ItemsControl ItemsSource="{Binding DeviceDetail.SignatureLines}" ItemTemplate="{StaticResource DetailLineTemplate}"/>
+                  <TextBlock Text="{Binding DeviceDetail.SignatureTechnical}" TextWrapping="Wrap" FontSize="11"
+                             Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0"
+                             Visibility="{Binding DeviceDetail.SignatureTechnical, Converter={StaticResource NullToVis}}"/>
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+                <StackPanel>
+                  <TextBlock Text="DRIVER" Style="{StaticResource SectionTitle}"/>
+                  <ItemsControl ItemsSource="{Binding DeviceDetail.DriverLines}" ItemTemplate="{StaticResource DetailLineTemplate}"/>
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource CardBorder}">
+                <StackPanel>
+                  <TextBlock Text="LINKED FINDINGS" Style="{StaticResource SectionTitle}"/>
+                  <TextBlock Text="No findings linked to this device." Foreground="{StaticResource MutedBrush}"
+                             Visibility="{Binding DeviceDetail.RelatedFindings.Count, Converter={StaticResource CountToVis}, ConverterParameter=invert}"/>
+                  <ItemsControl ItemsSource="{Binding DeviceDetail.RelatedFindings}" ItemTemplate="{StaticResource FindingRowTemplate}"
+                                Visibility="{Binding DeviceDetail.RelatedFindings.Count, Converter={StaticResource CountToVis}}"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Grid>
+        </ScrollViewer>
+      </DockPanel>
+    </Grid>
+  </Grid>
+</Window>
