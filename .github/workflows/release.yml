@@ -78,7 +78,7 @@ jobs:
 
       - name: Upload nightly artifact
         if: steps.version.outputs.is_tag != 'true'
-        uses: actions/upload-artifact@6546280a86b273fd0800de8d256dd7957411a814 # v4.6.0
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: IronTrace-nightly-win-x64
           path: ${{ steps.package.outputs.zip_name }}
@@ -86,7 +86,7 @@ jobs:
 
       - name: Create GitHub Release
         if: steps.version.outputs.is_tag == 'true'
-        uses: softprops/action-gh-release@7a47279023e49af948fe249daa7d3650d5b44340 # v2.2.2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           tag_name: ${{ github.ref_name }}
           name: IronTrace ${{ steps.version.outputs.version }}
