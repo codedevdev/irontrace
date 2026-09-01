@@ -17,6 +17,11 @@
 
 IronTrace collects evidence about platform security, PCI/PCIe/USB devices, drivers, and optional forensic signals — then produces an explainable integrity assessment. It helps you **review** a machine. It does not declare someone a cheater from one odd finding. There is no auto-ban path.
 
+## Repository metadata (GitHub About)
+
+- **Description:** Windows hardware and forensic integrity scanner for game-server anti-cheat investigations.
+- **Suggested topics:** `anti-cheat`, `forensics`, `windows-security`, `game-server-security`, `hardware-integrity`, `pcie`, `usb`, `byovd`, `wpf`, `dotnet`
+
 | Channel | Version |
 |---------|---------|
 | Application | **0.7.0** (Phase 6 — Forensic Integrity Scan) |

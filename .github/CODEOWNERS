@@ -1,0 +1,11 @@
+* @codedevdev
+
+src/IronTrace.App/ @codedevdev
+src/IronTrace.Cli/ @codedevdev
+src/IronTrace.Server/ @codedevdev
+src/IronTrace.Core/ @codedevdev
+src/IronTrace.Forensics/ @codedevdev
+src/IronTrace.Hardware/ @codedevdev
+src/IronTrace.RiskEngine/ @codedevdev
+tests/ @codedevdev
+docs/ @codedevdev
